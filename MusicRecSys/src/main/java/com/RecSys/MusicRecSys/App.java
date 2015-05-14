@@ -69,7 +69,7 @@ InputStream userTripletsPath= new FileInputStream( filePath);
 return hashTableUserIDIndex;
 
 	}
-	
+//	 Test - Ümit Tepe
 	
 	//create hashtable for songs
 	public static Hashtable<String,String> indexSongIds (String filePath) throws Exception
