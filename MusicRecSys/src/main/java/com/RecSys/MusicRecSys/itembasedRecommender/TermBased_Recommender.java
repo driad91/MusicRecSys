@@ -16,12 +16,10 @@ package com.RecSys.MusicRecSys.itembasedRecommender;
  * 
  * 		To-Do's:
  * 		- Comparison methods (like artist_0ids with the most-frequent similar tags should be recommended
- * fggjhfhgfhg
+ *  	- TOP 10 
  * 
- * xxxxxx
  */
-//test git hub
-//Daniel Riad
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
