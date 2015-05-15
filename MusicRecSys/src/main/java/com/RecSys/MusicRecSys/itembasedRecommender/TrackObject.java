@@ -13,10 +13,18 @@ public class TrackObject {
 	private float artist_hotttness;
 	private int year;
 	private int track_7digitalid;
+	private String title;
 	
 	
 	
-	
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
 	public TrackObject(String artist_id) {
 		super();
@@ -26,7 +34,7 @@ public class TrackObject {
 	public TrackObject(String track_id, String song_id, String release,
 			String artist_id, String artist_mbid, String artist_name,
 			float duration, float artist_familiarity, float artist_hotttness,
-			int year, int track_7digitalid) {
+			int year, int track_7digitalid, String title) {
 		super();
 		this.track_id = track_id;
 		this.song_id = song_id;
@@ -39,6 +47,7 @@ public class TrackObject {
 		this.artist_hotttness = artist_hotttness;
 		this.year = year;
 		this.track_7digitalid = track_7digitalid;
+		this.title = title;
 	}
 	public String getTrack_id() {
 		return track_id;
