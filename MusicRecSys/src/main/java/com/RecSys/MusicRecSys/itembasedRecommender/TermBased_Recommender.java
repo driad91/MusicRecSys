@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class TermBased_Recommender {
@@ -35,6 +36,10 @@ public class TermBased_Recommender {
 	private String term;
 	private HashMap<String, ArrayList<String>> term_index;
 	private HashMap<String, ArrayList<String>> artist_index;
+	private HashMap<String, ArrayList<String>> similar_artists_index;
+	private HashMap<String, Integer> similar_artist_counter;
+	private HashMap<String, Float> similar_artist_measure;
+	private ArrayList<TopRank> ranking;
 
 	public TermBased_Recommender(String path) {
 		super();
@@ -199,121 +204,71 @@ public class TermBased_Recommender {
 		return this.term_index;
 	}
 
-//	
-//	public static void main(String[] args) throws ClassNotFoundException {
-//
-//		HashMap<String, ArrayList<String>> term_index = new HashMap<String, ArrayList<String>>();
-//		HashMap<String, ArrayList<String>> artist_index = new HashMap<String, ArrayList<String>>();
-//
-//		// artist_mbtag dataset
-//		Connection c = null;
-//		Statement stmt3 = null;
-//		try {
-//			Class.forName("org.sqlite.JDBC");
-//
-//			c = DriverManager
-//					.getConnection("jdbc:sqlite:C:/Users/Laz/Desktop/WM Project/Datasets/artist_term.db");
-//
-//			c.setAutoCommit(false);
-//
-//			stmt3 = c.createStatement();
-//			ResultSet rs_artist_mbtag = stmt3
-//					.executeQuery("SELECT artist_id, mbtag FROM artist_mbtag;");
-//			while (rs_artist_mbtag.next()) {
-//				String term = rs_artist_mbtag.getString("mbtag");
-//				String artist_id = rs_artist_mbtag.getString("artist_id");
-//
-//				if (term_index.containsKey(term) == true) {
-//					ArrayList<String> check_terms = term_index.get(term);
-//					if (check_terms.contains(artist_id) != true) {
-//						check_terms.add(artist_id);
-//					}
-//				} else if (term_index.containsKey(term) != true) {
-//					ArrayList<String> initial_term = new ArrayList<String>();
-//					initial_term.add(artist_id);
-//					term_index.put(term, initial_term);
-//				}
-//
-//				if (artist_index.containsKey(artist_id) == true) {
-//					ArrayList<String> check_artists = artist_index
-//							.get(artist_id);
-//					if (check_artists.contains(term) != true) {
-//						check_artists.add(term);
-//					}
-//
-//				} else if (artist_index.containsKey(artist_id) != true) {
-//					ArrayList<String> initial_artist = new ArrayList<String>();
-//					initial_artist.add(term);
-//					artist_index.put(artist_id, initial_artist);
-//				}
-//
-//			}
-//
-//			rs_artist_mbtag.close();
-//			stmt3.close();
-//			c.close();
-//
-//			// artist_term dataset
-//			Statement stmt4 = null;
-//			Class.forName("org.sqlite.JDBC");
-//			c = DriverManager
-//					.getConnection("jdbc:sqlite:C:/Users/Laz/Desktop/WM Project/Datasets/artist_term.db");
-//			c.setAutoCommit(false);
-//
-//			stmt4 = c.createStatement();
-//			ResultSet rs_artist_term = stmt4
-//					.executeQuery("SELECT artist_id, term FROM artist_term;");
-//			while (rs_artist_term.next()) {
-//
-//				String term = rs_artist_term.getString("term");
-//				String artist_id = rs_artist_term.getString("artist_id");
-//
-//				if (term_index.containsKey(term) == true) {
-//					ArrayList<String> check_terms = term_index.get(term);
-//					if (check_terms.contains(artist_id) != true) {
-//						check_terms.add(artist_id);
-//					}
-//				} else if (term_index.containsKey(term) != true) {
-//					ArrayList<String> initial_term = new ArrayList<String>();
-//					initial_term.add(artist_id);
-//					term_index.put(term, initial_term);
-//				}
-//
-//				if (artist_index.containsKey(artist_id) == true) {
-//					ArrayList<String> check_artists = artist_index
-//							.get(artist_id);
-//					if (check_artists.contains(term) != true) {
-//						check_artists.add(term);
-//					}
-//
-//				} else if (artist_index.containsKey(artist_id) != true) {
-//					ArrayList<String> initial_artist = new ArrayList<String>();
-//					initial_artist.add(term);
-//					artist_index.put(artist_id, initial_artist);
-//				}
-//
-//			}
-//			rs_artist_term.close();
-//			stmt4.close();
-//			c.close();
-//
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//
-//		// System.out.println("term_index: ");
-//		// System.out.println(term_index.get("european"));
-//		// System.out.println("artist_index:");
-//		// System.out.println("ARSD1PL1187FB3BD81");
-//
-//		// Output looks like:
-//		// term_index:
-//		// [AR00B1I1187FB433EB, AR07MCL1187B9B2DCA, AR0B6OD1187B9ABED2,
-//		// AR0G6AY1187B990CD8]
-//		// artist_index:
-//		// ARSD1PL1187FB3BD81
-//
-//	}
+	public HashMap<String, Float> computeArtistsSimilarity(
+			ArrayList<String> similarArtists, String artist_id) {
+		this.similar_artists_index = new HashMap<String, ArrayList<String>>();
+		this.similar_artist_counter = new HashMap<String, Integer>();
+		this.similar_artist_measure = new HashMap<String, Float>();
 
-	
+		for (String sim_artist_id : similarArtists) {
+			this.similar_artists_index = this.getArtistIndex(sim_artist_id);
+		}
+
+		for (String sim_artist_id : similarArtists) {
+			ArrayList<String> terms = this.similar_artists_index
+					.get(sim_artist_id);
+			for (String term : terms) {
+				if (this.similar_artists_index.get(artist_id).contains(term)) {
+					if (this.similar_artist_counter.containsKey(sim_artist_id)) {
+						int get_counter = this.similar_artist_counter
+								.get(sim_artist_id);
+						get_counter = get_counter + 1;
+						this.similar_artist_counter.put(sim_artist_id,
+								get_counter);
+					} else {
+						this.similar_artist_counter.put(sim_artist_id, 1);
+					}
+				}
+
+			}
+
+		}
+
+		for (String sim_artis_id : similarArtists) {
+			float single_count = this.similar_artist_counter.get(sim_artis_id);
+			float total_count = this.getArtistIndex(artist_id).get(artist_id)
+					.size();
+			float similarity = single_count / total_count;
+			this.similar_artist_measure.put(sim_artis_id, similarity);
+
+		}
+		return this.similar_artist_measure;
+	}
+
+	public ArrayList<TopRank> getTopk(HashMap<String, Float> measure_map,
+			ArrayList<String> similarArtists, int topK) {
+		this.ranking = new ArrayList<TopRank>();
+		ArrayList<TopRank> backup_ranking = new ArrayList<TopRank>();
+
+		for (String id : similarArtists) {
+			float value = measure_map.get(id).floatValue();
+			TopRank trElement = new TopRank();
+			trElement.setId(id);
+			trElement.setSimilarity(value);
+			this.ranking.add(trElement);
+		}
+
+		Collections.sort(this.ranking);
+		Collections.reverse(this.ranking);
+
+		backup_ranking = this.ranking;
+
+		for (int i = this.ranking.size() - 1; i >= topK; i--) {
+			backup_ranking.remove(i);
+		}
+		this.ranking = backup_ranking;
+
+		return this.ranking;
+	}
+
 }

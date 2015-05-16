@@ -10,6 +10,7 @@ public final class Track_Metadata {
 
 	private String path;
 	private String song_id;
+	private String track_id;
 	private HashMap<String, TrackObject> track_metadataHM;
 
 	// private TrackObject hm_trackobject;
@@ -79,6 +80,34 @@ public final class Track_Metadata {
 	public HashMap<String, TrackObject> getMetadata() {
 
 		return this.track_metadataHM;
+	}
+
+	public String getSongId(String track_id) {
+		this.track_id = track_id;
+		Connection c = null;
+		Statement stmt = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection(this.path);
+			c.setAutoCommit(false);
+
+			stmt = c.createStatement();
+			ResultSet rs = stmt
+					.executeQuery(" SELECT song_id FROM songs WHERE track_id = '"
+							+ this.track_id + "' ;");
+			while (rs.next()) {
+				this.song_id = rs.getString("song_id");
+			}
+			rs.close();
+			stmt.close();
+			c.close();
+
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			System.exit(0);
+		}
+
+		return this.song_id;
 	}
 
 }
