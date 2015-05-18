@@ -130,25 +130,30 @@ public class lFM_similarity {
 	public ArrayList<TopRank> getTopk(String lFM_sim_string, int topK) {
 		this.ranking = new ArrayList<TopRank>();
 
-		List<String> input_ranking = Arrays.asList(lFM_sim_string.split(","));
-		ArrayList<TopRank> backup_ranking = new ArrayList<TopRank>();
+		if (lFM_sim_string != null) {
+			List<String> input_ranking = Arrays.asList(lFM_sim_string
+					.split(","));
+			ArrayList<TopRank> backup_ranking = new ArrayList<TopRank>();
 
-		for (int i = 0; i <= input_ranking.size() - 1; i = i + 2) {
-			TopRank trElement = new TopRank();
-			trElement.setId(input_ranking.get(i));
-			float similarity = Float.parseFloat(input_ranking.get(i + 1));
-			trElement.setSimilarity(similarity);
-			this.ranking.add(trElement);
+			for (int i = 0; i <= input_ranking.size() - 1; i = i + 2) {
+				TopRank trElement = new TopRank();
+				trElement.setId(input_ranking.get(i));
+				float similarity = Float.parseFloat(input_ranking.get(i + 1));
+				trElement.setSimilarity(similarity);
+				this.ranking.add(trElement);
+			}
+
+			backup_ranking = this.ranking;
+
+			for (int i = this.ranking.size() - 1; i >= topK; i--) {
+				backup_ranking.remove(i);
+			}
+			this.ranking = backup_ranking;
+
+			return this.ranking;
+		} else {
+			return null;
 		}
-
-		backup_ranking = this.ranking;
-
-		for (int i = this.ranking.size() - 1; i >= topK; i--) {
-			backup_ranking.remove(i);
-		}
-		this.ranking = backup_ranking;
-
-		return this.ranking;
 	}
 
 }

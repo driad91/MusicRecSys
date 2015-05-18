@@ -1,7 +1,5 @@
 package com.RecSys.MusicRecSys.itembasedRecommender;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+
 
 public class TopRank implements Comparable<TopRank>{
 private String id;
