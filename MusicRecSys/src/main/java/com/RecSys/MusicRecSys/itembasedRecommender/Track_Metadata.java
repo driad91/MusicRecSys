@@ -8,38 +8,31 @@ import java.util.HashMap;
 
 public final class Track_Metadata {
 
-	private String path;
-	private String song_id;
-	private String track_id;
-	private HashMap<String, TrackObject> track_metadataHM;
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
 
-	// private TrackObject hm_trackobject;
-
-	public Track_Metadata(String path, String song_id) {
-		super();
-		this.path = path;
-		this.song_id = song_id;
-
-		// HashMap<String, TrackObject> track_metadataHM = new
-		// HashMap<String,TrackObject>();
-		track_metadataHM = new HashMap<String, TrackObject>();
+		HashMap<String, TrackObject> track_metadataHM = new HashMap<String, TrackObject>();
 
 		Connection c = null;
+
+		// Getting track_metadata
 		Statement stmt = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection(this.path);
+			c = DriverManager
+					.getConnection("jdbc:sqlite:C:/Users/Laz/Desktop/WM Project/Datasets/track_metadata.db");
 			c.setAutoCommit(false);
+			System.out.println("Opened database successfully");
 
 			stmt = c.createStatement();
 			ResultSet rs = stmt
-					.executeQuery("SELECT track_id, title, release, artist_id, artist_mbid, "
-							+ " artist_name, duration, artist_familiarity, artist_hotttnesss,year, "
-							+ " track_7digitalid FROM songs  WHERE song_id = '"
-							+ song_id + "' ;");
+					.executeQuery("SELECT track_id, title, song_id, release,  artist_id, artist_mbid, "
+							+ "artist_name, duration, artist_familiarity, artist_hotttnesss,year,"
+							+ " track_7digitalid    FROM songs;");
 			while (rs.next()) {
 				String track_id = rs.getString("track_id");
 				String title = rs.getString("title");
+				String song_id = rs.getString("song_id");
 				String release = rs.getString("release");
 				String artist_id = rs.getString("artist_id");
 				String artist_mbid = rs.getString("artist_mbid");
@@ -50,19 +43,13 @@ public final class Track_Metadata {
 				int year = rs.getInt("year");
 				int track_7digitalid = rs.getInt("track_7digitalid");
 
-				TrackObject hm_trackobject = new TrackObject(track_id, song_id,
-						release, artist_id, artist_mbid, artist_name, duration,
-						artist_familiarity, artist_hotttnesss, year,
-						track_7digitalid, title);
-
-				if (this.track_metadataHM.containsKey(this.song_id) == true) {
-					// Just for testing
-					this.track_metadataHM.put("DUPLICATE " + this.song_id,
-							hm_trackobject);
-				}
-
-				if (track_metadataHM.containsKey(this.song_id) != true) {
-					this.track_metadataHM.put(this.song_id, hm_trackobject);
+				if (track_metadataHM.containsKey(artist_id) != true) {
+					TrackObject hm_trackobject = new TrackObject(artist_name,
+							artist_name, artist_name, artist_name, artist_name,
+							artist_name, artist_hotttnesss, artist_hotttnesss,
+							artist_hotttnesss, track_7digitalid,
+							track_7digitalid);
+					track_metadataHM.put(artist_id, hm_trackobject);
 				}
 
 			}
@@ -74,40 +61,10 @@ public final class Track_Metadata {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			System.exit(0);
 		}
+		System.out.println("Operation done successfully");
 
-	}
+		System.out.println(track_metadataHM);
 
-	public HashMap<String, TrackObject> getMetadata() {
-
-		return this.track_metadataHM;
-	}
-
-	public String getSongId(String track_id) {
-		this.track_id = track_id;
-		Connection c = null;
-		Statement stmt = null;
-		try {
-			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection(this.path);
-			c.setAutoCommit(false);
-
-			stmt = c.createStatement();
-			ResultSet rs = stmt
-					.executeQuery(" SELECT song_id FROM songs WHERE track_id = '"
-							+ this.track_id + "' ;");
-			while (rs.next()) {
-				this.song_id = rs.getString("song_id");
-			}
-			rs.close();
-			stmt.close();
-			c.close();
-
-		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-			System.exit(0);
-		}
-
-		return this.song_id;
 	}
 
 }

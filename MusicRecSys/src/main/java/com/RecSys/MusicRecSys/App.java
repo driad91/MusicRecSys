@@ -121,7 +121,10 @@ return hashTableUserIDIndex;
     public static void main( String[] args ) throws Exception 
     {
     	
+   
+    User_Triplets_Sqlite.insertUserTasteToMxm();
     
+    	System.exit(0);
     	
     	
     	String userTripletsPath="C:\\Users\\Daniel\\Desktop\\Uni-Semester 2\\Web Mining\\Team Project\\EchoNest Dataset\\train_triplets.txt\\Subset 5 MB\\train_triplets001Subset.txt";
@@ -220,6 +223,8 @@ return hashTableUserIDIndex;
     	System.out.println(recommender.recommend(Integer.parseInt(lineOne.split(",")[0]), 1));
     userid=	Integer.parseInt(lineOne.split(",")[0]);
     	}
+    	
+    	
     	
     	lineOne=usersTripletsBR.readLine();
     	 
