@@ -8,14 +8,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-import com.RecSys.MusicRecSys.itembasedRecommender.ArtistSimilarity_Recommender;
 import com.RecSys.MusicRecSys.itembasedRecommender.PlaylistObject;
-import com.RecSys.MusicRecSys.itembasedRecommender.TermBased_Recommender;
 import com.RecSys.MusicRecSys.itembasedRecommender.TopRank;
 import com.RecSys.MusicRecSys.itembasedRecommender.TrackObject;
 import com.RecSys.MusicRecSys.itembasedRecommender.Track_Metadata;
 import com.RecSys.MusicRecSys.itembasedRecommender.lFM_similarity;
-import com.RecSys.MusicRecSys.itembasedRecommender.lFM_tag;
 
 public class ItemBasedRecommender_Test {
 
